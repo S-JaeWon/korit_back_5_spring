@@ -1,0 +1,36 @@
+1. 	https://start.spring.io/
+	-> Maven, java 체크 
+
+2. 	Dependencies -> Spring Boot Dev Tools, Lombok, Spring Web (+ 나중에 sql 연결)
+
+3. 	Group: com.study
+
+	Artifact: mvc
+
+	Description: Demo project for Spring Boot 
+
+	Package name: com.study.mvc
+
+	-> Generate
+
+4. 	intelliJ -> spring 폴더 열기 -> pom.xml 
+                      <parent>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-parent</artifactId>
+      	2.6.6->	<version>2.6.6</version>
+		<relativePath/> <!-- lookup parent from repository -->
+
+                      <properties>
+      	 11 ->	<java.version>11</java.version>
+
+5. 	src -> main ->  resources -> application.properties -> shift + f6 -> rename -> application.yml
+	*yml로 쓸시 들여쓰기 칸은 'space 2번' 
+	
+
+6.	https://mvnrepository.com/search?q=thymeleaf -> 
+	Spring Boot Starter Thymeleaf -> 최신버전
+
+
+
+
+

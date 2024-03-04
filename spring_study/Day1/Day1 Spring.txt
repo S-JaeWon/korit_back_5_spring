@@ -1,0 +1,9 @@
+요청 하나당 서블렛 하나씩 필요
+->
+컨트롤러 안에 메소드(서블렛)들로 처리
+
+MVC 구조 
+
+클라이언트 -> http요청 -> DispatcherServlet(주소 타고 들어감 ex)localhost:8080/~
+-> get 요청(@GetMapping) -> 핸들러 목록조회(매핑주소 확인) -> 있다면 응답 ex)데이터 전달 
+어노테이션으로 응답 종류 확인 ex) @ResponseBody -> 데이터 응답, 없다면 View 응답
