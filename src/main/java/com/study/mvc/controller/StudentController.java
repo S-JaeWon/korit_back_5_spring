@@ -1,14 +1,17 @@
 package com.study.mvc.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.study.mvc.dto.StudentReqDto;
 import com.study.mvc.entity.Student;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 @RestController
 public class StudentController {
@@ -22,10 +25,34 @@ public class StudentController {
         return studentObj;
     }*/
 
-    @PostMapping("/student")
-    public ResponseEntity<?> addStudent(@RequestBody/*json 변환*/ Student student) {
-                                        // json 형식이 아닐시 빼줘야함
-        return ResponseEntity.created(null).body(student);
+    @PostMapping("/student") //@RequestBody, json 변환, json 형식이 아닐시 빼줘야함
+    public ResponseEntity<?> addStudent(@CookieValue String students, @RequestBody Student student) throws JsonProcessingException {
+        List<Student> studentList = new ArrayList<>();
+        int lastId = 0;
+        if(students != null) {
+            if(students.isBlank()) {
+                ObjectMapper studentsCookie = new ObjectMapper();
+                studentList = studentsCookie.readValue(students, List.class);
+                lastId = studentList.get(studentList.size() - 1).getStudentId();
+            }
+        }
+
+        student.setStudentId(lastId + 1);
+        studentList.add(student);
+
+        ObjectMapper newStudentList = new ObjectMapper();
+        String newStudents = newStudentList.writeValueAsString(studentList);
+        ResponseCookie responseCookie = ResponseCookie
+                .from("test", "test_data") // from 쿠키이름
+                .httpOnly(true)
+                .secure(true)
+                .path("/")
+                .maxAge(60)
+                .build();
+        return ResponseEntity
+                .created(null)
+                .header(HttpHeaders.SET_COOKIE, responseCookie.toString())
+                .body(student);
     }
 
     @GetMapping("/student")
