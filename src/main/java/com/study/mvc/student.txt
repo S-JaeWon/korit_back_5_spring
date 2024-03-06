@@ -1,0 +1,19 @@
+학생 추가 조회
+
+Controller
+    - StudentRestController
+        - Get요청: /students      - 응답: OK [{"name": "A"}, {"name": "B"}, {"name": "C"}]
+        - Get요청: /students/0~2  - 응답: Ok {"name": "A"}
+
+Service
+    - StudentService(interface)
+        - getStudentList()
+        - getStudent(int index)
+    - StudentServiceImpl(class)
+
+Repository
+    - StudentRepository(interface)
+        - getStudentListAll()
+        - findStudentNameByIndex(int index)
+    - StudentRepositoryImpl(class)
+        - studentList = ["A", "B", "C"]

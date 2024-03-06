@@ -9,6 +9,8 @@ import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -26,14 +28,21 @@ public class StudentController {
     }*/
 
     @PostMapping("/student") //@RequestBody, json 변환, json 형식이 아닐시 빼줘야함
-    public ResponseEntity<?> addStudent(@CookieValue String students, @RequestBody Student student) throws JsonProcessingException {
-        List<Student> studentList = new ArrayList<>();
-        int lastId = 0;
-        if(students != null) {
-            if(students.isBlank()) {
-                ObjectMapper studentsCookie = new ObjectMapper();
-                studentList = studentsCookie.readValue(students, List.class);
-                lastId = studentList.get(studentList.size() - 1).getStudentId();
+    public ResponseEntity<?> addStudent(@CookieValue(required = false) String students, @RequestBody Student student) throws JsonProcessingException, UnsupportedEncodingException {
+                                                /*쿠키가 없어도된다는 코드*/
+        ObjectMapper objectMapper = new ObjectMapper(); // 오브젝트생성
+        List<Student> studentList = new ArrayList<>(); // 빈배열 생성
+        int lastId = 0; // ID 0값
+
+        System.out.println(students);
+
+        if(students != null) { // null 이 아니고 빈값이 아니라면 반복을 통해1),
+            if(!students.isBlank()) {
+                for(Object object : objectMapper.readValue(students, List.class)) { // json을 list로 변환2), list 안에는 student 객체가 아닌 오브젝트로 저장
+                    Map<String, Object> studentMap = (Map<String, Object>) object; // 오브젝트를 Map으로 다운캐스팅
+                    studentList.add(objectMapper.convertValue(studentMap, Student.class)); // 위에서 만든 빈배열에 Map으로 다운캐스팅한것을 student 객체로 저장
+                }
+                lastId = studentList.get(studentList.size() - 1).getStudentId(); // List의 마지막 인덱스 불러오기
             }
         }
 
@@ -41,17 +50,22 @@ public class StudentController {
         studentList.add(student);
 
         ObjectMapper newStudentList = new ObjectMapper();
-        String newStudents = newStudentList.writeValueAsString(studentList);
+        String studentListJson = objectMapper.writeValueAsString(studentList);
+
+        System.out.println(studentListJson);
         ResponseCookie responseCookie = ResponseCookie
-                .from("test", "test_data") // from 쿠키이름
+                .from("students", URLEncoder.encode(studentListJson, "UTF-8")) // 쿠키에 "" 문자가 인식x, 인코딩
                 .httpOnly(true)
-                .secure(true)
-                .path("/")
+                .secure(true) // 암호화
+                .path("/") // 경로, / -> 모든 경로 허용, /~~~ -> ~~~ 이하 경로일때만 쿠키 사용가능
                 .maxAge(60)
                 .build();
+
+        // (")문자 저장x
+
         return ResponseEntity
                 .created(null)
-                .header(HttpHeaders.SET_COOKIE, responseCookie.toString())
+                .header(HttpHeaders.SET_COOKIE, responseCookie.toString()) // 문자열로 쿠키 넣기
                 .body(student);
     }
 
