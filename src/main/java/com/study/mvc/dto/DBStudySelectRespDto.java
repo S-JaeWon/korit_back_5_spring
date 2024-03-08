@@ -5,8 +5,8 @@ import lombok.Data;
 
 @Builder
 @Data
-public class DBStudyRespDto { // 응답 dto
+public class DBStudySelectRespDto {
     private int id;
     private String name;
-    private String age;
+    private int age;
 }

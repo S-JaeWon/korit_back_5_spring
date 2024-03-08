@@ -1,0 +1,90 @@
+mybatis -> resources에서 new-directory 후 mappers(이름암거나) 폴더 생성(필요함)
+
+app~.yml 에서 
+mybatis:
+  mapper-location:
+    -/mappers/*.xml
+
+※yml 문법, 들여쓰기는 무조건 '스페이스바 2칸'
+
+jdbc 설정
+aws -> rds -> mysql_db -> 엔드포인트 및 포트 확인 
+
+app~.yml 에서
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://[엔드포인트]:[포트]/[데이터베이스명]/[스키마명]
+    username: 
+    password: 
+
+※개인정보 이므로 GitIgnore에서 따로 설정
+
+controller -> service -> repository -> mybatis -> DB
+
+Repository에 @Mapper를 달아줌 (인터페이스 하나만 만듦, 클래스 만들고 impl 안 함)
+테이블 하나 당 1 repository
+
+https://mybatis.org/mybatis-3
+mybtis 사용법 
+
+매핑된 SQL 구문 사용
+
+mapper 폴더에 xml 파일 생성 후 
+
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.mybatis.example.BlogMapper">
+  <select id="selectBlog" resultType="Blog">
+    select * from Blog where id = #{id}
+  </select>
+</mapper>
+
+붙여넣기
+
+namespcae 에 repository 연동(경로 써주기)
+
+※Repository에서 만든 interpace에 impl을 만드는것 대신 xml 생성
+
+mapper 안에 
+
+    <insert id="">
+        
+    </insert>
+-> id 에 메소드 명 기입 
+
+insert 하기위에 매개변수가 필요 매개변수(파라미터 타입)
+
+엔티티에 스키마명과 비슷한 클래스 생성후, 테이블 컬럼과 똑같이 만듦
+
+클라이언트 -> json을 DTO로 변환 -> controller -> dto를 service -> dto를 entity로 변환 -> repositoy -> DB 
+
+save 함수의 매개변수 entity에 있는 Study가 됨
+
+매개변수 경로 기입 
+
+    <insert id="save" parameterType="com.study.mvc.entity.Study">
+
+    </insert>
+
+mybatis가 xml이 클래스 역할을 하게 해줌 -> 자동으로 @component 삽입
+
+서비스는 dto를 엔티티로 혹은 반대로 변환 해줌, 컨트롤에서 서비스 호출 시 서비스는 매개변수를 dto로 받음 
+
+
+응답시 study.xml 에
+
+	useGeneratedKeys="true" // 기본 값 false
+            keyProperty="id" // 테이블의 PK 값 
+추가
+
+서비스의 int successCount = dbStudyRepository.save(study); 실행시 xml의 keyProperty="id" 에 의해 id 값 생성이 가능 
+
+
+
+
+
+
+
